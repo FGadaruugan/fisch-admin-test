@@ -38,7 +38,10 @@ for(const size of [192,512]){
 const runtimeEntries=[...html.matchAll(/<script\b[^>]*\btype="module"[^>]*\bsrc="([^"]+)"/g)].map(m=>resolve(root,m[1].split('?')[0]));
 const runtime=await build({absWorkingDir:root,entryPoints:runtimeEntries,bundle:true,packages:'external',format:'esm',platform:'browser',splitting:true,outdir:resolve(root,'dist'),write:false,metafile:true,logLevel:'silent'});
 const external=[...new Set(Object.values(runtime.metafile.inputs).flatMap(input=>input.imports.filter(item=>item.external).map(item=>item.path)))];
-if(external.length)throw new Error('Root page requires unresolved browser imports: '+external.join(', '));
+const importMapMatch=html.match(/<script type="importmap">([\\s\\S]*?)<\\/script>/);
+const importMap=importMapMatch?JSON.parse(importMapMatch[1]):{imports:{}};
+const unresolved=external.filter(name=>!importMap.imports?.[name]);
+if(unresolved.length)throw new Error('Root page requires unresolved browser imports: '+unresolved.join(', '));
 for(const file of ['js/main.js','js/ui.js','js/lobby.js']){
   const source=await readFile(resolve(root,file),'utf8');
   for(const match of source.matchAll(/\b(?:byId|id)\(['"]([^'"]+)['"]\)/g))if(!ids.includes(match[1]))throw new Error(`${file}: missing HTML id ${match[1]}`);
