@@ -1,22 +1,14 @@
-# Fisch Admin Test
+# Fisch Admin Studio Test
 
-Тусдаа staging/test repository. Үндсэн `fisch` production сайтад өөрчлөлт хийхгүй.
+Үндсэн `FGadaruugan/fisch` production сайтаас тусдаа UI demo.
 
-## Одоогийн байдал
+- Admin dashboard + responsive layout
+- Fish Catalog: хайлт, rarity filter, demo загас нэмэх/засах/идэвхжүүлэх
+- Rod Manager, Island Lab demo toggles
+- Animation Lab, Auto Catch, Backpack, Settings
+- Browser-local хадгалалт ба demo activity log
+- GitHub Pages workflow
 
-- [x] Admin Studio UI + responsive CSS
-- [x] Fail-closed authentication gate scaffold
-- [x] GitHub Pages Actions workflow
-- [x] Staging configuration placeholders
-- [ ] Тусдаа staging Supabase project тохируулах
-- [ ] Edge Function дээр серверийн Admin+ allowlist тохируулах
-- [ ] Google OAuth redirect тохируулах
-- [ ] Pages deployment амжилттай болохыг баталгаажуулах
+Deployment амжилттай болсны дараа: https://fgadaruugan.github.io/fisch-admin-test/admin.html
 
-## Нээх
-
-Deploy амжилттай болсны дараа: `https://fgadaruugan.github.io/fisch-admin-test/admin.html`
-
-## Аюулгүй байдал
-
-`js/staging-config.js` нь санаатай placeholder утгатай. Тусдаа staging backend бэлэн болохоос өмнө login ажиллахгүй. Production Supabase URL/key, service-role key, OAuth secret зэргийг энд бүү оруул. Friend ID нь authentication credential биш.
+**Хязгаар:** Одоогийн хувилбар зөвхөн browser-ийн demo өгөгдөлд ажиллана. Production backend болон бодит тоглоомын өгөгдөлд хүрэхгүй. Жинхэнэ серверийн Admin+ auth болон backend холболтод тусдаа staging Supabase project шаардлагатай. Service-role/secret key-г browser кодод хэзээ ч бүү байрлуул.
