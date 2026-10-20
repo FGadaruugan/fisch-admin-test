@@ -1,14 +1,23 @@
-# Fisch Admin Studio Test
+# Fisch 1.0.0 — Test Environment
 
-Үндсэн `FGadaruugan/fisch` production сайтаас тусдаа UI demo.
+This repository is the isolated test copy of the current Fisch game source from `FGadaruugan/fisch`.
 
-- Admin dashboard + responsive layout
-- Fish Catalog: хайлт, rarity filter, demo загас нэмэх/засах/идэвхжүүлэх
-- Rod Manager, Island Lab demo toggles
-- Animation Lab, Auto Catch, Backpack, Settings
-- Browser-local хадгалалт ба demo activity log
-- GitHub Pages workflow
+## Entry points
 
-Deployment амжилттай болсны дараа: https://fgadaruugan.github.io/fisch-admin-test/admin.html
+- Game: https://fgadaruugan.github.io/fisch-admin-test/
+- Admin Studio test page: https://fgadaruugan.github.io/fisch-admin-test/admin.html
 
-**Хязгаар:** Одоогийн хувилбар зөвхөн browser-ийн demo өгөгдөлд ажиллана. Production backend болон бодит тоглоомын өгөгдөлд хүрэхгүй. Жинхэнэ серверийн Admin+ auth болон backend холболтод тусдаа staging Supabase project шаардлагатай. Service-role/secret key-г browser кодод хэзээ ч бүү байрлуул.
+## 1.0.0 baseline
+
+- Copied the current HTML, CSS, JavaScript modules, assets, resource manifest, service worker, and Supabase function/schema source.
+- Set the game release metadata and package version to `1.0.0`.
+- This repository is for testing changes before any separate production release.
+- Production repository `FGadaruugan/fisch` was not modified by this copy operation.
+
+## Backend safety
+
+Copying backend source files does not deploy them to Supabase or connect them to a staging project. Before testing live account or admin actions, configure a separate staging Supabase project and review all environment settings. Never put a service-role or secret key in browser code or GitHub Pages.
+
+## Admin Studio
+
+The Admin Studio page is kept separate from the game entry point. Its current authentication/backend state must be verified separately; do not treat the local demo as a server-authenticated admin console.
