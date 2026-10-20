@@ -134,7 +134,7 @@ const rows = [
  ['m06','Moon-Eater Ray','Mythic',60000,414400,'kingreach','serpent','#742544','#ff5d83',0.82],
  ['m07','Abyssal Dragonfish','Mythic',67200,280000,'kingreach','serpent','#742544','#ff5d83',0.99],
  ['m08','Crown of the Deep','Mythic',74400,302400,'kingreach','serpent','#742544','#ff5d83',1.16],
- ['m09','King\\'s Phantom','Mythic',81600,324800,'kingreach','serpent','#742544','#ff5d83',1.33],
+ ['m09','King\'s Phantom','Mythic',81600,324800,'kingreach','serpent','#742544','#ff5d83',1.33],
  ['m10','Starless Leviathan','Mythic',88800,347200,'kingreach','serpent','#742544','#ff5d83',1.50],
  ['m11','The Drowned Titan','Mythic',60000,369600,'kingreach','serpent','#742544','#ff5d83',1.67],
  ['u03','??? Redacted One','???',112000,1260000,'kingreach','leviathan','#742544','#ff5d83',1.84],
