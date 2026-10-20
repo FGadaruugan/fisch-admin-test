@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#160b18"><title>Fisch · Admin Studio Test</title>
+<link rel="stylesheet" href="./css/admin-studio.css">
+</head>
+<body>
+<main class="frame">
+<header class="top"><div class="mark">FISCH <span>ADMIN STUDIO · TEST</span></div><span class="tag">STAGING ONLY</span></header>
+<section class="hero"><p class="eyebrow">SECURITY GATE / TEST ENVIRONMENT</p><h1>Admin <em>Studio</em></h1>
+<p class="lead">Үндсэн Fisch сайтаас тусгаарласан тестийн самбар. Серверийн эрхийн шалгалт болон staging backend тохируулагдахаас өмнө админ үйлдэл идэвхжихгүй.</p>
+<div id="status" class="status" role="status" aria-live="polite">Тестийн тохиргоог шалгаж байна…</div>
+<button id="login" class="primary" type="button" hidden>Google account-аар нэвтрэх</button>
+<button id="logout" class="secondary" type="button" hidden>Гарах</button></section>
+<section id="workspace" hidden><div class="section-heading"><div><p class="eyebrow">CONTROL PLANE</p><h2>Туршилтын удирдлага</h2></div><span class="tag safe">SERVER VERIFIED</span></div>
+<div class="grid">
+<article class="tile"><span class="symbol">01</span><h3>Cyber Security</h3><p>Нэвтрэлт болон серверийн Admin+ зөвшөөрөл.</p><span class="state">Серверээр баталгаажуулна</span></article>
+<article class="tile"><span class="symbol">02</span><h3>Test Lab</h3><p>Өөрийн staging backend дээр өөрчлөлтийг шалгах орчин.</p><span class="state">Production өгөгдөл ашиглахгүй</span></article>
+<article class="tile"><span class="symbol">03</span><h3>Release Gate</h3><p>Шалгалт амжилттай болсны дараа хүний хяналтаар PR үүсгэнэ.</p><span class="state">Автоматаар release хийхгүй</span></article>
+</div>
+<div class="notice"><strong>Хамгаалалтын төлөв</strong><p>Энэ scaffold нь одоогоор зөвхөн эрхийн төлөв харуулна. Production өгөгдөл өөрчлөх эсвэл deploy хийх товч байхгүй.</p></div>
+<p id="identity" class="identity"></p></section>
+<footer>FISCH SECURITY · TEST ENVIRONMENT · NOINDEX</footer></main>
+<script type="module" src="./js/admin-studio.js"></script>
+</body></html>
