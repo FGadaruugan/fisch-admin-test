@@ -5,7 +5,9 @@ import {createLighting} from './lighting.js';
 export function createGraphics(T,canvas,rawSettings={},onQuality=()=>{}) {
   let settings=normalizeSettings(rawSettings),hour=settings.timeOfDay,time=0,world=null;
   const mobile=globalThis.matchMedia?.('(pointer: coarse)')?.matches??false;
-  const adaptive=createAdaptiveQuality(mobile?1:2),monitor=createPerformanceMonitor();
+  const threads=Number(globalThis.navigator?.hardwareConcurrency)||0,memory=Number(globalThis.navigator?.deviceMemory)||0;
+  const constrained=mobile||(threads>0&&threads<=4)||(memory>0&&memory<=4);
+  const adaptive=createAdaptiveQuality(constrained?0:2),monitor=createPerformanceMonitor();
   const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
   renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.shadowMap.type=T.PCFShadowMap;
   const scene=new T.Scene(),camera=new T.PerspectiveCamera(62,1,0.08,settings.viewDistance);
