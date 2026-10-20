@@ -7,14 +7,18 @@ import {checkResources} from './build-resources.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 async function files(directory){let result=[];for(const entry of await readdir(directory,{withFileTypes:true})){const path=resolve(directory,entry.name);if(entry.isDirectory())result.push(...await files(path));else result.push(path);}return result;}
 let count=0;
-for(const dir of ['js','scripts','tests','supabase/functions'])for(const path of await files(resolve(root,dir))){
-  if(!/\.(?:js|mjs|ts)$/.test(path))continue;const source=await readFile(path,'utf8');
-  if(path.endsWith('.ts'))await transform(source,{loader:'ts',target:'es2022'});
-  else{const check=spawnSync(process.execPath,['--check',path],{encoding:'utf8'});if(check.status!==0)throw new Error(check.stderr);}
-  // The shared-server generator's inline entry is resolved from the project root.
-  const importRoot=path===resolve(root,'scripts/sync-server.mjs')?root:dirname(path);
-  for(const match of source.matchAll(/(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)(['"])(\.[^'"]+)\1/g))await access(resolve(importRoot,match[2]));
-  count++;
+for(const dir of ['js','scripts','tests','supabase/functions']){
+  const directory=resolve(root,dir);
+  try{await access(directory);}catch{continue;}
+  for(const path of await files(directory)){
+    if(!/\.(?:js|mjs|ts)$/.test(path))continue;const source=await readFile(path,'utf8');
+    if(path.endsWith('.ts'))await transform(source,{loader:'ts',target:'es2022'});
+    else{const check=spawnSync(process.execPath,['--check',path],{encoding:'utf8'});if(check.status!==0)throw new Error(check.stderr);}
+    // The shared-server generator's inline entry is resolved from the project root.
+    const importRoot=path===resolve(root,'scripts/sync-server.mjs')?root:dirname(path);
+    for(const match of source.matchAll(/(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)(['"])(\.[^'"]+)\1/g))await access(resolve(importRoot,match[2]));
+    count++;
+  }
 }
 const pages=await Promise.all(['index.html','account.html'].map(file=>readFile(resolve(root,file),'utf8')));
 const html=pages.join('\n'),ids=[...pages[0].matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
