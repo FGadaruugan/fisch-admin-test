@@ -27,12 +27,16 @@ function label(T,text){
 }
 export function createWorld(T,islandId,{distantIslands=true,decorativeBoat=true}={}) {
   const model=createTerrainModel(islandId),group=new T.Group(),lods=[],instances=[],random=seededRandom(model.meta.seed),matrix=new T.Matrix4(),dummy=new T.Object3D();
+  const coarsePointer=globalThis.matchMedia?.('(pointer: coarse)')?.matches??false;
+  const threads=Number(globalThis.navigator?.hardwareConcurrency)||0,memory=Number(globalThis.navigator?.deviceMemory)||0;
+  const lowPower=coarsePointer||(threads>0&&threads<=4)||(memory>0&&memory<=4);
   const material=(color,options={})=>new T.MeshStandardMaterial({color,roughness:0.9,...options});
   const terrainMat=material('#ffffff',{vertexColors:true});
-  const extent=model.radius*1.12,cellSize=extent*2/8;
-  for(let z=0;z<8;z++)for(let x=0;x<8;x++){
+  const tileCount=lowPower?6:8,highSegments=lowPower?10:16,lowSegments=lowPower?4:6;
+  const extent=model.radius*1.12,cellSize=extent*2/tileCount;
+  for(let z=0;z<tileCount;z++)for(let x=0;x<tileCount;x++){
     const lod=new T.LOD(),gx=-extent+x*cellSize,gz=-extent+z*cellSize;
-    for(const [resolution,distance]of [[16,0],[6,300]]){
+    for(const [resolution,distance]of [[highSegments,0],[lowSegments,lowPower?220:300]]){
       const m=new T.Mesh(chunkGeometry(T,model,gx,gz,cellSize,resolution),terrainMat);m.castShadow=true;m.receiveShadow=true;lod.addLevel(m,distance);
     }
     lod.position.set(model.center.x+gx+cellSize/2,0,model.center.z+gz+cellSize/2);group.add(lod);lods.push(lod);
@@ -77,8 +81,9 @@ export function createWorld(T,islandId,{distantIslands=true,decorativeBoat=true}
     m.instanceMatrix.needsUpdate=true;m.computeBoundingSphere();instances.push(m);group.add(m);return m;
   }
   const trees=[],rocks=[],grass=[];
+  const treeTarget=lowPower?240:560,treeTryLimit=lowPower?5000:12000;
   let tries=0;
-  while(trees.length<560&&tries++<12000){
+  while(trees.length<treeTarget&&tries++<treeTryLimit){
     const x=cx+(random()*2-1)*r,z=cz+(random()*2-1)*r,h=model.heightAt(x,z),lx=x-cx,lz=z-cz;
     if(!model.isWalkable(x,z)||model.onPier(x,z)||model.isClearing(x,z)||h<2.1||h>58||(Math.abs(lx)<13&&lz>0)||model.buildings.some(([bx,bz,w,d])=>Math.abs(lx-bx)<w&&Math.abs(lz-bz)<d))continue;
     trees.push({x,z,h,size:0.65+random()*0.75,angle:random()*Math.PI*2});
@@ -98,10 +103,11 @@ export function createWorld(T,islandId,{distantIslands=true,decorativeBoat=true}
     const crowns=trees.map(p=>({x:p.x,y:p.h+6*p.size,z:p.z,sx:p.size*2.4,sy:p.size*1.2,sz:p.size*2.4}));
     instance(new T.IcosahedronGeometry(1,1),material(model.meta.biome==='ruins'?'#547d6e':'#a3a269'),crowns.length,crowns);
   }
-  for(let i=0;i<1700;i++){
+  const groundSamples=lowPower?800:1700,rockLimit=lowPower?200:420;
+  for(let i=0;i<groundSamples;i++){
     const x=cx+(random()*2-1)*r,z=cz+(random()*2-1)*r,h=model.heightAt(x,z);
     if(!model.isWalkable(x,z)||model.onPier(x,z)||model.isClearing(x,z)||h<1.5)continue;
-    if(i<420){const size=0.6+random()*2.1;rocks.push({x,y:h+size*0.35,z,sx:size,sy:size*(0.45+random()*0.5),sz:size*0.9,ry:random()*6.28});}
+    if(i<rockLimit){const size=0.6+random()*2.1;rocks.push({x,y:h+size*0.35,z,sx:size,sy:size*(0.45+random()*0.5),sz:size*0.9,ry:random()*6.28});}
     else if(h<30)grass.push({x,y:h,z,sx:0.35+random()*0.4,sy:0.4+random()*0.8,sz:0.4,ry:random()*6.28});
   }
   instance(new T.DodecahedronGeometry(1,0),material(model.meta.rock),rocks.length,rocks);
@@ -113,7 +119,7 @@ export function createWorld(T,islandId,{distantIslands=true,decorativeBoat=true}
     const hill=mesh(new T.ConeGeometry(meta.radius*0.55,meta.biome==='alpine'?100:55,18),material(meta.rock),meta.center[0],25,meta.center[1]-15);hill.castShadow=false;
     if(meta.biome==='alpine'){const snow=mesh(new T.ConeGeometry(meta.radius*0.23,46,18),material('#dde9e6'),meta.center[0],73,meta.center[1]-15);snow.castShadow=false;}
   }
-  const particlesCount=240,particlePositions=new Float32Array(particlesCount*3);
+  const particlesCount=lowPower?90:240,particlePositions=new Float32Array(particlesCount*3);
   for(let i=0;i<particlesCount;i++){particlePositions[i*3]=(random()*2-1)*32;particlePositions[i*3+1]=random()*25;particlePositions[i*3+2]=(random()*2-1)*32;}
   const particlesGeo=new T.BufferGeometry();particlesGeo.setAttribute('position',new T.BufferAttribute(particlePositions,3));
   const particles=new T.Points(particlesGeo,new T.PointsMaterial({color:model.meta.biome==='alpine'?'#edfaff':'#e6ce8b',size:model.meta.biome==='alpine'?0.09:0.055,transparent:true,opacity:0.55,depthWrite:false}));particles.frustumCulled=false;group.add(particles);
