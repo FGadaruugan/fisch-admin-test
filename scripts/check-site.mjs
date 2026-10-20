@@ -38,7 +38,7 @@ for(const size of [192,512]){
 const runtimeEntries=[...html.matchAll(/<script\b[^>]*\btype="module"[^>]*\bsrc="([^"]+)"/g)].map(m=>resolve(root,m[1].split('?')[0]));
 const runtime=await build({absWorkingDir:root,entryPoints:runtimeEntries,bundle:true,packages:'external',format:'esm',platform:'browser',splitting:true,outdir:resolve(root,'dist'),write:false,metafile:true,logLevel:'silent'});
 const external=[...new Set(Object.values(runtime.metafile.inputs).flatMap(input=>input.imports.filter(item=>item.external).map(item=>item.path)))];
-const importMapMatch=html.match(/<script type="importmap">([\\s\\S]*?)<\\/script>/);
+const importMapMatch=html.match(/<script type="importmap">([\s\S]*?)<\/script>/);
 const importMap=importMapMatch?JSON.parse(importMapMatch[1]):{imports:{}};
 const unresolved=external.filter(name=>!importMap.imports?.[name]);
 if(unresolved.length)throw new Error('Root page requires unresolved browser imports: '+unresolved.join(', '));
