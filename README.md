@@ -1,12 +1,22 @@
 # Fisch Admin Test
 
-Тусдаа staging/test орчин. Үндсэн `fisch` production сайтаас тусгаарлана.
+Тусдаа staging/test repository. Үндсэн `fisch` production сайтад өөрчлөлт хийхгүй.
 
-## Status
+## Одоогийн байдал
 
-- [ ] Admin Studio code copied
-- [ ] Separate staging Supabase configured
-- [ ] GitHub Pages deployment enabled
-- [ ] OAuth redirect and admin allowlist verified
+- [x] Admin Studio UI + responsive CSS
+- [x] Fail-closed authentication gate scaffold
+- [x] GitHub Pages Actions workflow
+- [x] Staging configuration placeholders
+- [ ] Тусдаа staging Supabase project тохируулах
+- [ ] Edge Function дээр серверийн Admin+ allowlist тохируулах
+- [ ] Google OAuth redirect тохируулах
+- [ ] Pages deployment амжилттай болохыг баталгаажуулах
 
-**Security:** Do not add Supabase service-role keys or other secrets to this repository. Do not connect this test site to production data.
+## Нээх
+
+Deploy амжилттай болсны дараа: `https://fgadaruugan.github.io/fisch-admin-test/admin.html`
+
+## Аюулгүй байдал
+
+`js/staging-config.js` нь санаатай placeholder утгатай. Тусдаа staging backend бэлэн болохоос өмнө login ажиллахгүй. Production Supabase URL/key, service-role key, OAuth secret зэргийг энд бүү оруул. Friend ID нь authentication credential биш.
