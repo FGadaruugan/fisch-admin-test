@@ -1,4 +1,4 @@
-export const RELEASE=Object.freeze({version:'0.2.0',date:'2026-10-16',settings:'SS 2',appearance:'ColorOS 2',system:'FSFS 2',notes:[
+export const RELEASE=Object.freeze({version:'1.0.0',date:'2026-10-20',settings:'SS 2',appearance:'ColorOS 2',system:'FSFS 2',notes:[
   'SS 2: найман ангилал, бүх тохиргооны хайлт, бэлэн горимууд.',
   'Гурван хувийн профайл, нэг алхмын Undo, ангиллын тохиргоог сэргээх.',
   'Бодит хэмжээ, файл шалгалттай нөөц таталт ба офлайн local эхлүүлэлт.',
