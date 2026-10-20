@@ -1,0 +1,6 @@
+project_id = "fisch"
+
+[functions.fisch-api]
+# Modern project JWTs are verified in the handler with Auth.getUser on every request.
+# Anonymous calls are rejected before game or database commands run.
+verify_jwt = false
