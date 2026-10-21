@@ -1,18 +1,30 @@
-import {FISH,RARITIES,RODS} from '../data.js';
+import {FISH,RARITIES,RODS,ISLANDS} from '../data.js';
 import {fishPrice} from '../progression.js';
 import {fishIcon} from '../models/fish.js';
 import {h,button,empty,badge,money} from './dom.js';
 import {getCatchInfo} from './fish-info.js';
 
+const ownedTools = state => state.rods.map(id=>RODS[id]).filter(Boolean);
+
 export function renderBackpack(state,{tab='fish',rarity='all',sort='weight',merchant=false,onFilter}={}) {
   const root=h('div',{class:'backpack-panel'});
-  const tabs=h('div',{class:'tabs'});
-  for(const [id,label]of [['fish','Загас · '+state.fish.length],['rods','Саваа · '+state.rods.length]])tabs.append(h('button',{class:tab===id?'active':'',type:'button',onClick:()=>onFilter({tab:id})},label));
+  const tabs=h('div',{class:'tabs','aria-label':'Backpack ангилал'});
+  const collectionCount=state.collection?.length||0;
+  for(const [id,label] of [
+    ['fish','🎣 Загас · '+state.fish.length],
+    ['rods','🛒 Rod shop'],
+    ['tools','🧰 Tools · '+state.rods.length],
+    ['items','💎 Items · '+collectionCount+'/100']
+  ]) tabs.append(h('button',{class:tab===id?'active':'',type:'button','aria-pressed':String(tab===id),onClick:()=>onFilter({tab:id})},label));
   root.append(tabs);
+
   if(tab==='rods'){root.append(renderRodShop(state));return root;}
-  const filter=h('select',{'aria-label':'Ховор байдлаар шүүх',onChange:event=>onFilter({rarity:event.target.value})},h('option',{value:'all'},'Бүх rarity'),...Object.keys(RARITIES).map(key=>h('option',{value:key},key)));filter.value=rarity;
+  if(tab==='tools'){root.append(renderTools(state));return root;}
+  if(tab==='items'){root.append(renderItems(state));return root;}
+
+  const rarityFilter=h('select',{'aria-label':'Ховор байдлаар шүүх',onChange:event=>onFilter({rarity:event.target.value})},h('option',{value:'all'},'Бүх rarity'),...Object.keys(RARITIES).map(key=>h('option',{value:key},key)));rarityFilter.value=rarity;
   const sorter=h('select',{'aria-label':'Загас эрэмбэлэх',onChange:event=>onFilter({sort:event.target.value})},h('option',{value:'weight'},'Хамгийн хүнд'),h('option',{value:'value'},'Хамгийн үнэтэй'),h('option',{value:'recent'},'Сүүлд барьсан'));sorter.value=sort;
-  root.append(h('div',{class:'filter-row'},filter,sorter,h('span',{class:'capacity'},state.fish.length+' / 100 slots')));
+  root.append(h('div',{class:'filter-row'},rarityFilter,sorter,h('span',{class:'capacity'},state.fish.length+' / 100 slots')));
   let fish=state.fish.filter(f=>rarity==='all'||FISH[f.speciesId].rarity===rarity);
   fish=[...fish].sort((a,b)=>sort==='value'?fishPrice(b)-fishPrice(a):sort==='recent'?Date.parse(b.caughtAt)-Date.parse(a.caughtAt):b.weightGrams-a.weightGrams);
   if(!fish.length)root.append(empty('Таны дараагийн гайхамшиг энд байна','Эргийн тавцангаас загас бариад Backpack-доо цуглуулаарай.'));
@@ -42,6 +54,44 @@ export function renderBackpack(state,{tab='fish',rarity='all',sort='weight',merc
   if(!merchant)root.append(h('p',{class:'help-text'},'Загасаа худалдаачны дэргэд очоод зарна.'));
   return root;
 }
+
+function renderTools(state){
+  const root=h('section',{class:'inventory-tools'});
+  root.append(h('div',{class:'inventory-note'},h('b',{},'🧰 Таны хэрэгслүүд'),h('p',{},'Эзэмшдэг саваагаа эндээс тоноглоно. Luck нь ховор загас сонгогдох магадлалд, Control нь таталтын барыг удирдахад нөлөөлнө.')));
+  const tools=ownedTools(state);
+  if(!tools.length)root.append(empty('Хэрэгсэл алга','Rod shop-оос саваа аваарай.','🧰'));
+  const grid=h('div',{class:'rod-grid'});
+  for(const rod of tools){
+    const equipped=state.equippedRod===rod.id;
+    grid.append(h('article',{class:'rod-shop-card tool-card',style:{'--accent':rod.color}},
+      h('div',{class:'rod-illustration'},h('i',{}),h('b',{},'◉')),
+      h('div',{class:'rod-info'},h('p',{class:'eyebrow'},equipped?'EQUIPPED':'OWNED TOOL'),h('h3',{},rod.name),h('p',{},rod.description),h('div',{class:'rod-attributes'},h('span',{},'Control '+Math.round(rod.width*100)+'%'),h('span',{},'Luck ×'+rod.luck),rod.sizeMultiplier?h('span',{},'Size ×'+rod.sizeMultiplier):null)),
+      button(equipped?'✓ Тоноглосон':'Тоноглох','equip_rod',{rodId:rod.id},equipped?'btn subtle':'btn primary',equipped)
+    ));
+  }
+  root.append(grid);
+  return root;
+}
+
+function renderItems(state){
+  const root=h('section',{class:'inventory-items'});
+  const discovered=new Set(state.collection||[]);
+  root.append(h('div',{class:'inventory-note'},h('b',{},'💎 Загасны цуглуулга'),h('p',{},'Барсан species бүр энд нээгдэнэ. Нууц загас баригдахаас өмнө нэр нь харагдахгүй. Олдсон загасны мэдээлэл Profile болон Backpack-д хадгалагдана.'),
+    h('div',{class:'inventory-progress'},h('span',{},'Нээсэн зүйл'),h('b',{},discovered.size+' / '+Object.keys(FISH).length),h('i',{style:{width:(discovered.size/Object.keys(FISH).length*100)+'%'}}))));
+  const grid=h('div',{class:'collection-grid item-collection-grid'});
+  for(const fish of Object.values(FISH)){
+    const found=discovered.has(fish.id),rarity=RARITIES[fish.rarity],island=ISLANDS[fish.islandId];
+    grid.append(h('article',{class:'collection-card'+(found?'':' locked'),style:{'--accent':rarity.color},title:found?fish.name:'Нээгдээгүй species'},
+      h('img',{src:fishIcon(fish.id),alt:found?fish.name:'Нээгдээгүй загас',loading:'lazy'}),
+      h('b',{},found?fish.name:'???'),
+      h('small',{},found?fish.rarity:'НЭЭГДЭЭГҮЙ'),
+      h('small',{},found?island.name:'????')
+    ));
+  }
+  root.append(grid);
+  return root;
+}
+
 export function renderRodShop(state){
   const root=h('div',{class:'rod-grid'});
   for(const rod of Object.values(RODS)){
@@ -49,7 +99,7 @@ export function renderRodShop(state){
     if(rod.acquisition==='trade'&&!owned)continue;
     root.append(h('article',{class:'rod-shop-card',style:{'--accent':rod.color}},
       h('div',{class:'rod-illustration'},h('i',{}),h('b',{},'◉')),
-      h('div',{class:'rod-info'},h('p',{class:'eyebrow'},equipped?'EQUIPPED':owned?'OWNED':'UPGRADE YOUR VOYAGE'),h('h3',{},rod.name),h('p',{},rod.description),h('div',{class:'rod-attributes'},h('span',{},'Control '+Math.round(rod.width*100)+'%'),h('span',{},'Luck ×'+rod.luck))),
+      h('div',{class:'rod-info'},h('p',{class:'eyebrow'},equipped?'EQUIPPED':owned?'OWNED':'UPGRADE YOUR VOYAGE'),h('h3',{},rod.name),h('p',{},rod.description),h('div',{class:'rod-attributes'},h('span',{},'Control '+Math.round(rod.width*100)+'%'),h('span',{},'Luck ×'+rod.luck),rod.sizeMultiplier?h('span',{},'Size ×'+rod.sizeMultiplier):null)),
       button(equipped?'Тоноглосон':owned?'Тоноглох':'✦ '+money(rod.price)+' · Авах',owned?'equip_rod':'buy_rod',{rodId:rod.id},equipped?'btn subtle':'btn primary',equipped||(!owned&&state.coins<rod.price))
     ));
   }return root;
