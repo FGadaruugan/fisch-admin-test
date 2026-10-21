@@ -1,8 +1,11 @@
-export const RELEASE=Object.freeze({version:'1.0.0',date:'2026-10-20',settings:'SS 2',appearance:'ColorOS 2',system:'FSFS 2',notes:[
+export const RELEASE=Object.freeze({version:'1.0.0',date:'2026-10-21',settings:'SS 2',appearance:'ColorOS 3 · Crimson Current',system:'FSFS 2',notes:[
+  'V1.0.0: каталог 100 загас, 7 арал, 16 саваа.',
+  'ColorOS 3: Crimson Current улаан загвар, шинэ хөдөлгөөнт эффект.',
+  'Backpack: загас, Rod shop, Tools, 100 species цуглуулга.',
+  'Profile: ахиц, статистик, хувийн рекорд, арлын нээлт болон 6 амжилт.',
   'SS 2: найман ангилал, бүх тохиргооны хайлт, бэлэн горимууд.',
   'Гурван хувийн профайл, нэг алхмын Undo, ангиллын тохиргоог сэргээх.',
   'Бодит хэмжээ, файл шалгалттай нөөц таталт ба офлайн local эхлүүлэлт.',
-  'Сүлжээний төлөв, static файлын сервер шалгах, хувилбарын мэдээлэл.',
-  'ColorOS 2: Lagoon төрх, утсанд эвтэйхэн Settings дэлгэц.',
+  'Top 30 болон Friends-ийн бодит онлайн мэдээлэлд account/backend холболт шаардлагатай.',
   'Зүрхэлсэн загасыг Sell All хадгална; FSFS 2 хадгалалтын сэргээх хамгаалалт.'
 ]});
