@@ -14,6 +14,23 @@ export function renderProfile(state,mode='local',account={}) {
   root.append(h('div',{class:'xp-section'},h('div',{class:'xp-caption'},h('b',{},'Дараагийн эрэг рүү'),h('span',{},money(progress.current)+' / '+money(progress.needed)+' XP')),h('div',{class:'xp-track'},h('i',{style:{width:(progress.fraction*100)+'%'}}))));
   root.append(h('div',{class:'stats-grid'},stat(money(state.stats.totalCaught),'Барьсан загас'),stat(state.collection.length+'/'+Object.keys(FISH).length,'Нээгдсэн species'),stat('✦ '+money(state.coins),'Coin'),stat(best?formatKg(best.weightGrams)+' kg':'—','Хамгийн хүнд')));
   if(best)root.append(h('div',{class:'personal-best'},h('img',{src:fishIcon(best.speciesId),alt:best.name}),h('div',{},h('p',{class:'eyebrow'},'PERSONAL BEST'),h('h3',{},best.name),badge(best.rarity,best.color)),h('div',{class:'record-values'},h('b',{},best.kg+' kg'),h('small',{},'✦ '+money(best.value)))));
+  const rarityCounts=state.stats.rarityCounts||{};
+  const achievements=[
+    {icon:'🎣',name:'Анхны барилт',description:'Эхний загасаа барь',unlocked:state.stats.totalCaught>=1,progress:Math.min(1,state.stats.totalCaught),label:state.stats.totalCaught>=1?'НЭЭГДСЭН':state.stats.totalCaught+'/1'},
+    {icon:'🐟',name:'Далайн дадлагажигч',description:'10 загас барь',unlocked:state.stats.totalCaught>=10,progress:Math.min(1,state.stats.totalCaught/10),label:Math.min(state.stats.totalCaught,10)+'/10'},
+    {icon:'🌊',name:'Туршлагатай загасчин',description:'100 загас барь',unlocked:state.stats.totalCaught>=100,progress:Math.min(1,state.stats.totalCaught/100),label:Math.min(state.stats.totalCaught,100)+'/100'},
+    {icon:'🗺️',name:'Арлуудын судлаач',description:'20 өөр species нээ',unlocked:state.collection.length>=20,progress:Math.min(1,state.collection.length/20),label:Math.min(state.collection.length,20)+'/20'},
+    {icon:'✨',name:'Домогт олз',description:'Legendary загас барь',unlocked:(rarityCounts.Legendary||0)>0,progress:(rarityCounts.Legendary||0)>0?1:0,label:(rarityCounts.Legendary||0)>0?'НЭЭГДСЭН':'ТҮГЖИГДСЭН'},
+    {icon:'👑',name:'King-ийн мөр',description:'King ангиллын загас барь',unlocked:(rarityCounts.King||0)>0,progress:(rarityCounts.King||0)>0?1:0,label:(rarityCounts.King||0)>0?'НЭЭГДСЭН':'ТҮГЖИГДСЭН'}
+  ];
+  root.append(h('div',{class:'section-heading'},h('h3',{},'Амжилтууд'),h('span',{},achievements.filter(item=>item.unlocked).length+' / '+achievements.length+' нээгдсэн')));
+  const achievementGrid=h('div',{class:'achievement-grid'});
+  for(const item of achievements)achievementGrid.append(h('article',{class:'achievement-card'+(item.unlocked?' unlocked':' locked')},
+    h('span',{class:'achievement-icon','aria-hidden':'true'},item.icon),
+    h('div',{class:'achievement-copy'},h('b',{},item.name),h('small',{},item.description),h('div',{class:'achievement-progress'},h('i',{style:{width:(item.progress*100)+'%'}}))),
+    h('span',{class:'achievement-status'},item.label)
+  ));
+  root.append(achievementGrid);
   root.append(h('div',{class:'section-heading'},h('h3',{},'Барилтын статистик'),h('span',{},'Нийт барьсан · зарсан загас багтана')));
   const rarityStats=h('div',{class:'rarity-breakdown'});
   for(const rarity of info.rarities)rarityStats.append(h('div',{class:'rarity-stat',style:{'--accent':rarity.color}},badge(rarity.label,rarity.color),h('b',{},money(rarity.count)),h('small',{},'барьсан')));
